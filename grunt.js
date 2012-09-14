@@ -30,7 +30,13 @@ module.exports = function(grunt) {
       globals: {
         exports: true
       }
+    },
+    min: {
+    dist: {
+      src: ['lib/compairlines.js'],
+      dest: 'compairlines.min.js'
     }
+  }
   });
 
   // Default task.

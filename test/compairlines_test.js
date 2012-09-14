@@ -1,4 +1,4 @@
-var compairlines = require('../lib/compairlines.js');
+require('./env.js');
 
 /*
   ======== A Handy Little Nodeunit Reference ========
@@ -20,15 +20,17 @@ var compairlines = require('../lib/compairlines.js');
     test.ifError(value)
 */
 
-exports['awesome'] = {
+exports.testGetSimilarities = {
   setUp: function(done) {
-    // setup here
+    // setup here    
     done();
   },
   'no args': function(test) {
     test.expect(1);
     // tests here
-    test.equal(compairlines.awesome(), 'awesome', 'should be awesome.');
+    var data = {'airportsDataSource':'../data/airports.csv'};    
+    console.log(navigator);
+    test.equal(cal.getSimilarities(data,null), 'NCE', 'should be NCE.');
     test.done();
   }
 };
