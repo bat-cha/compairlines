@@ -31,11 +31,12 @@
                 stroke: #fff;
                 stroke-width: 3px;
                 stroke-opacity: .8;
-            }
+            }	
         </style>
         <script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/d3.v2.js"></script>
+		<script type="text/javascript" src="js/html5slider.js"></script>
 		<!-- just used as workaround to save generated similarities ...
 		<script type="text/javascript" src="js/FileSaver.min.js"></script>
 		<script type="text/javascript" src="js/BlobBuilder.min.js"></script>
@@ -64,13 +65,18 @@
 							    <a id="help" href="#" rel="popover" title="Help" data-placement="bottom" data-content="<p>To CompAir, choose one airline by typing its IATA code (e.g. DL).<br/>
 						You will then see the selected airline in the central position, compared to all other airlines separated by distances representing similarity.<br/>
                         Bubble size represents the total number of scheduled legs per year.<br/>
-						Bubble color represents similarity.</p>" >Help</a>                                
+						Bubble color represents similarity.<br/>
+						You can also play with sliders to change similarity definition or filter the display</p>" >Help</a>                                
                             </li>
                             <li>
 							    <a id="about" href="#" rel="popover" title="About" data-placement="bottom" 
 								data-content="Similarities based on OAG Schedules published on August 2012.
 								<br>
-								Brought to you by Amadeus Operations Research & Innovation ;-)">About</a>                                
+								Brought to you by Amadeus Operations Research & Innovation ;-)
+								<br/>
+								Feedback more than welcome 
+								<a href='mailto:baptiste.chatrain@amadeus.com?Subject=[COMPAIRLINES]'> here </a>">
+								About</a>
                             </li>
                         </ul>
                         <div id="progressbarContainer" class="span4 nav pull-right" style="padding-top: 10px;">
@@ -87,7 +93,10 @@
             <div class="row">
                 <div id="topTen" class="span2"></div>
                 <div class="row">
-                    <div class="span8">                      
+                    <div class="span8">						
+					<p>Airline Competition analysis based on published schedules.</p>
+					<p>Go ahead, try to CompAir some airlines !</p>
+					    <div id="msg"></div>
                         <div
                         id="loading" class="alert alert-info fade in">
                             <strong>Loading...</strong>Please wait few seconds</div>

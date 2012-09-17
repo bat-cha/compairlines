@@ -7,6 +7,15 @@ var width = 800,
 var percentComplete = 0;
 $('#about').popover();
 $('#help').popover();
+if ($.browser.msie) {
+	$('#loading').attr('class','alert alert-error fade in').html('<strong>Holy guacamole!</strong> Sorry this application needs a modern browser (Chrome or Firefox...)<br/> It should then looks like this <img src="img/screenshot.jpg" width="800px" />');
+}
+else {
+
+ if (!$.browser.chrome) {
+	$('#msg').attr('class','alert alert-warn fade in').html('<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Be aware!</strong> The visualization perform bests with Google Chrome ...');
+}
+
 var formatNumber = d3.format(",.0f"),
     format = function(d) {
         return formatNumber(d) + " Legs";
@@ -43,7 +52,7 @@ var airlineSize = {};
 var rootChildrenIndex = {};
 
 buildAirports();
-
+}
 function buildAirports() {
     //header iata_code,country_code,city_code,region_code
     d3.csv("data/airports.csv", function(csv) {
