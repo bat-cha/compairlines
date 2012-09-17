@@ -441,7 +441,7 @@ function updateRoot() {
 function setRoot(name) {
 
     root = {
-        "name": name,
+        "name": name.toUpperCase(),
         "size": 0,
         "similarity": 100,
         "parent": root
