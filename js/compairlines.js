@@ -5,7 +5,8 @@ var width = 800,
     root;
 
 var percentComplete = 0;
-
+$('#about').popover();
+$('#help').popover();
 var formatNumber = d3.format(",.0f"),
     format = function(d) {
         return formatNumber(d) + " Legs";
@@ -51,8 +52,9 @@ function buildAirports() {
             airports[row.iata_code] = row;
         })
 
-        computeSimilarities();
-
+        //computeSimilarities();
+		loadData();
+		
     });
 }
 
@@ -171,13 +173,15 @@ function computeSimilarities() {
                 airline2 = airline1;                
             }
             if (percentComplete==100 ||airline1 == airlines.length) {
-                clearInterval(interval_progressbar);
-                $("#progressbarContainer").remove();
+                clearInterval(interval_progressbar);				
+                $("#progressbarContainer").remove();				
                 var end = new Date();
                 var elapsedT = new Date(end - start); // in ms		  
                 console.log("similarities computed in " + elapsedT.getTime() + " ms");
                 $("#loading").alert('close');
-                setRoot("AF");
+				exportAirlineSizes('airlineSize.json');
+				exportSimilarities('similarities.json');
+                setRoot("DL");
             }
         }, 0);
 
@@ -288,7 +292,7 @@ function getTopTen() {
     sorted.sort(function(a, b) {
         return b.similarity - a.similarity
     });
-    var table = '<table class="table table-striped"><thead><tr><th>IATA code</th><th>Similarity</th></tr></thead><tbody>';
+    var table = '<b>'+ root.name +'\'s Top 10 Competitors</b><table class="table table-striped"><thead><tr><th>IATA code</th><th>Similarity</th></tr></thead><tbody>';
     for (airline = 0; airline < 10; ++airline) {
         var a = sorted[airline];        
         table += ('<tr><td>'+a.airline+'</td><td>'+a.similarity+'%</td></tr>');
@@ -331,11 +335,11 @@ function update() {
     // Update the nodes…
     node = vis.selectAll("circle.node").data(nodes, function(d) {
         return d.name;
-    });/*.style("fill", function(d) {
+    }).style("fill", function(d) {
         return d.color = color(d.similarity);
     }).attr("r", function(d) {
         return d.children ? 10 : Math.sqrt(d.size) / 20;
-    })*/
+    })
 
     vis.selectAll("title.node").transition().text(function(d) {
         return d.name + "\n" + "Similarity with " + d.parent.name + " " + formatNumber(d.similarity) + "%" + "\n" + "Size " + d.size + " Legs";
@@ -437,7 +441,7 @@ function setRoot(name) {
     root.fixed = true;
     root.x = width / 2;
     root.y = height / 2;
-    buildVizNetwork(level);
+    buildVizNetwork();
 }
 
 // Returns a list of all nodes under the root.
@@ -474,4 +478,34 @@ function updateThreshold(newValue) {
         $("#threshold").html(threshold+"%");
         buildVizNetwork();
     }
+}
+
+function exportSimilarities(filename) {
+    exportObject(similarityMatrix,filename);
+}
+
+function exportAirlineSizes(filename) {
+    exportObject(airlineSize,filename);
+}
+
+function exportObject(object,filename) {
+   var dataJson = JSON.stringify(object);
+    var bb = new BlobBuilder;
+    bb.append(dataJson);
+    saveAs(bb.getBlob("text/plain;charset=utf-8"), filename);
+}
+
+function loadData() {
+
+  d3.json('data/airlineSize.json', function(json1) {
+      airlineSize = json1;
+	  $("#progressbar").css('width', "50%");            
+      d3.json('data/similarities.json', function(json2) {
+          similarityMatrix = json2;
+		  $("#loading").alert('close');
+		  $("#progressbarContainer").remove();				
+		  setRoot("DL");
+	  });
+  });
+
 }
