@@ -7,6 +7,7 @@ var width = 800,
 var percentComplete = 0;
 $('#about').popover();
 $('#help').popover();
+$('#details').html("Mouse over an Airline to get details");
 if ($.browser.msie) {
 	$('#loading').attr('class','alert alert-error fade in').html('<strong>Holy guacamole!</strong> Sorry this application needs a modern browser (Chrome or Firefox...)<br/> It should then looks like this <img src="img/screenshot.jpg" width="800px" />');
 }
@@ -25,7 +26,7 @@ levels = d3.scale.quantize().domain([0, 100]).range(["region", "country", "city"
 
 
 var force = d3.layout.force().friction(0.65).on("tick", tick).linkDistance(function(d) {
-    return 3 * (100 - d.target.similarity);
+    return 1 * (100-d.target.similarity) * Math.log(100 - d.target.similarity);
 }).size([width, height]);
 
 var vis = d3.select("#chart").append("svg").attr("width", width).attr("height", height);
@@ -255,6 +256,7 @@ function buildVizNetwork() {
 
     if (typeof root.children === 'undefined') {
         root.children = [];
+		rootChildrenIndex = {};
     }
 
     for (airline in similarityMatrix[level][rootAirline]) {
@@ -272,6 +274,7 @@ function buildVizNetwork() {
                 rootChildrenIndex[airline] = root.children.length - 1;
             }
             else {
+			    
                 root.children[rootChildrenIndex[airline]].similarity = similarityMatrix[level][rootAirline][airline];
                 root.children[rootChildrenIndex[airline]].parent = root;
             }
@@ -318,9 +321,8 @@ function update() {
 
     // Restart the force layout.
     force.nodes(nodes).links(links).start();
-
-    //remove the text
-    d3.selectAll("text").remove();
+    
+    d3.selectAll("g").remove();	
 
     // Update the links…
     link = vis.selectAll("line.link").data(links, function(d) {
@@ -348,17 +350,8 @@ function update() {
         return d.color = color(d.similarity);
     }).attr("r", function(d) {
         return d.children ? 10 : Math.sqrt(d.size) / 20;
-    })
-
-    vis.selectAll("title.node").transition().text(function(d) {
-        return d.name + "\n" + "Similarity with " + d.parent.name + " " + formatNumber(d.similarity) + "%" + "\n" + "Size " + d.size + " Legs";
     });
-    
-    //console.log(node.enter());
-    //console.log(node.exit());
-
-
-
+	
     node.transition().style("fill", function(d) {
         return d.color = color(d.similarity);
     }).attr("r", function(d) {
@@ -374,9 +367,9 @@ function update() {
         return d.children ? 10 : Math.sqrt(d.size) / 20;
     }).style("fill", function(d) {
         return d.color = color(d.similarity);
-    }).on("click", changeRoot).call(force.drag).append("title").text(function(d) {
-        return d.name + "\n" + "Similarity with " + d.parent.name + " " + formatNumber(d.similarity) + "%" + "\n" + "Size " + d.size + " Legs";
-    });
+    }).on("mouseover", getDetails).on("mouseout", clearDetails).call(force.drag);
+        
+    
 
 
     // Exit any old nodes.  
@@ -425,11 +418,12 @@ function tick() {
     });
 }
 
-// change root.
-function changeRoot(d) {
+function getDetails(d) {
+$('#details').html("<b class='text-error'>" + d.parent.name + "</b>" + "<-> <b class='text-info'>" + d.name + "</b> = " + formatNumber(d.similarity) + "%" + "<br/>" + "Size " + d.size + " Legs");
+}
 
-    setRoot(d.name);
-
+function clearDetails(d) {
+$('#details').html("Mouse over an Airline to get details");
 }
 
 function updateRoot() {
